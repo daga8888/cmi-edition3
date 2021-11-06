@@ -2,7 +2,8 @@ from random import random, randrange, sample
 
 class Choroba(object):
 
-    def __init__(self):
+    def __init__(self,min_szkodliwosc =5, maks_szkodliwosc=10):
+        self.szkodliwosc = randrange(min_szkodliwosc, maks_szkodliwosc)
         self.trwanie = 0
 
     def mija_dzien(self):
@@ -22,6 +23,9 @@ class Czlowiek(object):
     def czy_chory(self):
         return self.choroba is not None
 
+    def czy_zywy(self):
+        return self.zdrowie > 0
+
     def kontakt(self, czlowiek):
         if self.choroba is not None and czlowiek.choroba is None:
             losowa = random() #[0,1]
@@ -36,7 +40,7 @@ class Czlowiek(object):
         if self.choroba is None:
             self.zdrowie +=1
         else:
-            self.zdrowie -=5
+            self.zdrowie -= self.choroba.szkodliwosc
         if self.odpornosc > 0:
             self.odpornosc -= 1
 
@@ -70,6 +74,8 @@ class Swiat(object):
     def mija_dzien(self):
         # co sie dzieje codziennie na swiecie
         print(f'Mamy dzień {self.dzien:3} roku {self.rok}', end=' ')
+        ## weryfikujemy zgony
+        self.populacja = [ czlowiek for czlowiek in self.populacja if czlowiek.czy_zywy()]
         ## kontakty miedzy ludzkie
         min, maks = self.liczba_spotkan_kazdego_czlowieka
         for czlowiek in self.populacja:
@@ -94,5 +100,5 @@ class Swiat(object):
         for _ in range(liczba_dni):
             self.mija_dzien()
 
-swiat = Swiat(liczba_ludzi=10000, liczba_chorych=1, licza_spotkan_kazdego_czlowieka=(0,4))
-swiat.uruchom_przez(365)
+swiat = Swiat(liczba_ludzi=10000, liczba_chorych=1, licza_spotkan_kazdego_czlowieka=(0,2))
+swiat.uruchom_przez(60)
